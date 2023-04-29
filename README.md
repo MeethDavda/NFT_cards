@@ -1,9 +1,19 @@
-# Sample Hardhat Project
+# NFT based Document verification
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+## How to run this project locally
 
-Try running some of the following tasks:
+1. git clone the repository on your local system.
+2. On the root directory run the command :
+```
+ npm install
+```
+3. cd to the frontend folder and run the same command as step-2
+4. To run the Vite server run the command :
+```
+ npm run dev
+```
 
+## Some hardhat commands :
 ```shell
 npx hardhat help
 npx hardhat test
