@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract Marketplace is ReentrancyGuard {
     address payable public immutable feeAccount;
-    uint public immutable feePercent;
+    uint public immutable feePercent; // make it 0 to avoid code ambiguity
     uint public itemCount;
     struct Item{
         uint itemId;
@@ -71,8 +71,8 @@ contract Marketplace is ReentrancyGuard {
         require(msg.value >= _totalPrice, "Not enough ether to cover for the item price and the market fee");
         require(!item.sold, "Item already sold");
 
-        item.seller.transfer(item.price);
-        feeAccount.transfer(_totalPrice - item.price);
+        item.seller.transfer(item.price);  //item amount transfered to owner of nft
+        feeAccount.transfer(_totalPrice - item.price); //fee amount transfered to the owner of marketplace
 
         item.sold=true;
         item.nft.transferFrom(address(this), msg.sender, item.tokenId);
@@ -87,7 +87,7 @@ contract Marketplace is ReentrancyGuard {
         );
 
     }
-
+    // We dont need feePercent in our application since this will be used within the company
     function getTotalPrice(uint _itemId) view public returns(uint){
         return((items[_itemId].price*(100 + feePercent))/100);
     }
