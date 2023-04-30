@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 
 const toWei = (num) => ethers.utils.parseEther(num.toString())
-const froWei = (num) => ethers.utils.formatEther(num)
+const fromWei = (num) => ethers.utils.formatEther(num)
 describe("NFTMarketplace", async function(){
     let deployer, addr1, addr2, nft, marketplace;
     let feePercent = 1;
@@ -44,12 +44,12 @@ describe("NFTMarketplace", async function(){
 
     describe("Making marketplace items", function(){
         this.beforeEach(async function(){
-            await nft.connect(addr1).uint(URI)
+            await nft.connect(addr1).mint(URI)
             await nft.connect(addr1).setApprovalForAll(marketplace.address, true)
         })
 
         it("Should track newly created item, tranfer NFT from the seller to marketplace and emit offered event", async function(){
-            await expect(marketplace.connect(addre1).makeItem(nft.address, 1, toWei(1))).to.emit(marketplace, "Offered").withArgs(
+            await expect(marketplace.connect(addr1).makeItem(nft.address, 1, toWei(1))).to.emit(marketplace, "Offered").withArgs(
                 1,
                 nft.address,
                 1,
@@ -71,8 +71,69 @@ describe("NFTMarketplace", async function(){
 
         it("Should fail if the price is set to zero", async function(){
             await expect(
-                marketplace.connect(addr1).makeItems(nft.address, 1, 0)
+                marketplace.connect(addr1).makeItem(nft.address, 1, 0)
             ).to.be.revertedWith("Price must be greater than zero");
         });
     });
+
+    describe("Purchasing marketplace items", function(){
+        let price = 2;
+        let totalPriceInWei;
+        this.beforeEach(async function(){
+            await nft.connect(addr1).mint(URI)
+            await nft.connect(addr1).setApprovalForAll(marketplace.address, true)
+            await marketplace.connect(addr1).makeItem(nft.address, 1, toWei(price))
+        })
+
+        it("Should update item as sold, pay seller, transfer NFT to buyer, charfe fees and emit a Bought event", async function(){
+            const sellerInitialEthBal = await addr1.getBalance()
+            const feeAccountInitialEthBal = await deployer.getBalance()
+
+            totalPriceInWei = await marketplace.getTotalPrice(1);
+
+            await expect(marketplace.connect(addr2).purchaseItem(1, {value: totalPriceInWei})).to.emit(marketplace, "Bought").withArgs(
+                1,
+                nft.address,
+                1,
+                toWei(price),
+                addr1.address,
+                addr2.address
+            )
+            const sellerFinalEthBal = await addr1.getBalance()
+            const feeAccountFinalEthBal = await deployer.getBalance()
+
+            expect((await marketplace.items(1)).sold).to.equal(true)
+
+            expect(+fromWei(sellerFinalEthBal)).to.equal(+price + +fromWei(sellerInitialEthBal))
+
+            const fee = (feePercent/100)*price
+
+            expect(+fromWei(feeAccountFinalEthBal)).to.equal(+fee + +fromWei(feeAccountInitialEthBal))
+
+            expect(await nft.ownerOf(1)).to.equal(addr2.address);
+
+            expect((await marketplace.items(1)).sold).to.equal(true)
+
+        })
+
+        it("Should fail for invalid item ids, sold items and when not enough ether is paind", async function(){
+            await expect(
+                marketplace.connect(addr2).purchaseItem(2, {value: totalPriceInWei})
+            ).to.be.revertedWith("Item doesnt exist");
+
+            await expect(
+                marketplace.connect(addr2).purchaseItem(0, {value: totalPriceInWei})
+            ).to.be.revertedWith("Item doesnt exist");
+
+            await expect(
+                marketplace.connect(addr2).purchaseItem(1, {value: toWei(price)})
+            ).to.be.revertedWith("Not enough ether to cover for the item price and the market fee");
+
+            await marketplace.connect(addr2).purchaseItem(1, {value: totalPriceInWei})
+
+            await expect(
+                marketplace.connect(deployer).purchaseItem(1, {value: totalPriceInWei})
+            ).to.be.revertedWith("Item already sold");
+        });
+    })
 })
