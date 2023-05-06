@@ -15,7 +15,7 @@ function Navbar({ web3Handler, account }) {
             onClick={() => navigate("/create")}
             className="cursor-pointer my-auto mx-5"
           >
-            create
+            Create
           </div>
           <div
             onClick={() => navigate("/mynft")}

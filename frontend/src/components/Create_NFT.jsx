@@ -14,8 +14,6 @@ function Create_NFT() {
   return (
     <div className="flex justify-center content-center max-w-[1200px] mx-auto ">
       <div className="border-2 border-gray-400 bg-slate-100 rounded-md p-4 mt-10 w-[60%] items-center flex flex-col justify-center">
-        <input type="file" required name="file" onChange={uploadToIpfs} />
-
         <div className="flex flex-col mt-5 ">
           <div>Enter the Name of the NFT</div>
           <input
@@ -41,9 +39,15 @@ function Create_NFT() {
             required
             className="mt-2 border-2 border-gray-400 text-sm p-2"
             onChange={(e) => setPrice(e.target.value)}
-            placeholder="price in ETH"
+            placeholder="price in Matic"
           />
         </div>
+
+        <div className="flex flex-col mt-4 gap-2 ml-14">
+          <div>Upload Image</div>
+          <input type="file" required name="file" onChange={uploadToIpfs} />
+        </div>
+
         <div className="mt-8">
           <button
             className=" p-3 rounded-full border-2 border-slate-600"
