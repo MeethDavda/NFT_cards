@@ -1,15 +1,72 @@
-import { create as ipfsHttpClient } from "ipfs-http-client";
+// import { create as ipfsHttpClient } from "ipfs-http-client";
+import { ethers } from "ethers";
 import { useState } from "react";
+import { uploadFileToIPFS, uploadJSONToIPFS } from "../Pinata"; //Infura made their api paid - new alternative Pinata
 
-function Create_NFT() {
-  const [image, setImage] = useState("");
-  const [name, setName] = useState(null);
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
+function Create_NFT({ marketplace, nft }) {
+  const [fileURL, setFileURL] = useState("");
+  const [formParams, setFormParams] = useState({
+    name: "",
+    description: "",
+    price: "",
+  });
 
-  async function uploadToIpfs(event) {} //Infura made their api paid - new alternative Pinata
+  async function uploadToIpfs(event) {
+    event.preventDefault();
 
-  async function createNFT() {}
+    var file = event.target.files[0];
+    try {
+      const response = await uploadFileToIPFS(file);
+      if (response.success == true) {
+        console.log("Image uploaded to Pinata", response.pinataURL);
+        setFileURL(response.pinataURL);
+      }
+    } catch (e) {
+      console.log("error uploading to ipfs", e);
+    }
+  }
+
+  async function uploadMetaDataToIPFS() {
+    const { name, description, price } = formParams;
+    if (!name || !description || !price || !fileURL) return;
+
+    const nftJSON = {
+      name,
+      description,
+      price,
+      image: fileURL,
+    };
+
+    try {
+      const response = await uploadJSONToIPFS(nftJSON);
+      if (response.success) {
+        console.log("uploaded JSON to pinata: ", response);
+      }
+    } catch (error) {
+      console.log("error uploading JSON to pinata", error);
+    }
+  }
+
+  async function createNFT(e) {
+    e.preventDefault();
+
+    try {
+      const metaDataURL = await uploadMetaDataToIPFS();
+
+      await (await nft.mint(metaDataURL)).wait();
+      const id = await nft.tokenCount;
+
+      await (await nft.setApprovalForAll(marketplace.address, true)).wait();
+      const listingPrice = ethers.utils.parseUnits(formParams.price, "ether");
+
+      await (await marketplace.makeItem(nft.address, id, listingPrice)).wait();
+      alert("listed your NFT !!");
+      setFormParams({ name: "", description: "", price: "" });
+      // window.location.replace("/");
+    } catch (e) {
+      alert("upload error", e);
+    }
+  }
 
   return (
     <div className="flex justify-center content-center max-w-[1200px] mx-auto ">
@@ -20,7 +77,10 @@ function Create_NFT() {
             type="text"
             required
             className="mt-2 border-2 border-gray-400 p-2"
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) =>
+              setFormParams({ ...formParams, name: e.target.value })
+            }
+            value={formParams.name}
           />
 
           <div className="mt-8">Enter the Description </div>
@@ -30,7 +90,10 @@ function Create_NFT() {
             cols="30"
             rows="5"
             className="mt-2 border-2 border-gray-400"
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) =>
+              setFormParams({ ...formParams, description: e.target.value })
+            }
+            value={formParams.description}
           ></textarea>
 
           <div className="mt-8">Enter the Price of the NFT</div>
@@ -38,7 +101,10 @@ function Create_NFT() {
             type="number"
             required
             className="mt-2 border-2 border-gray-400 text-sm p-2"
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) =>
+              setFormParams({ ...formParams, price: e.target.value })
+            }
+            value={formParams.price}
             placeholder="price in Matic"
           />
         </div>

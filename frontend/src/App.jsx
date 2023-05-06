@@ -15,6 +15,8 @@ function App() {
   const [account, setAccount] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [nft, setNft] = useState(null);
+  const [provider, setProvider] = useState("");
+  const [signer, setSigner] = useState("");
 
   const web3Handler = async () => {
     console.log("pressed");
@@ -24,7 +26,8 @@ function App() {
     setAccount(accounts[0]);
     const provider = new ethers.providers.Web3Provider(window.etherium);
     const signer = provider.getSigner();
-
+    setProvider(provider);
+    setSigner(signer);
     loadContracts(signer);
   };
 
@@ -49,7 +52,10 @@ function App() {
             element={<Home marketplace={marketplace} nft={nft} />}
             path="/"
           />
-          <Route element={<Create_NFT />} path="/create" />
+          <Route
+            element={<Create_NFT marketplace={marketplace} nft={nft} />}
+            path="/create"
+          />
           <Route element={<MyNFT />} path="/mynft" />
         </Routes>
       </BrowserRouter>

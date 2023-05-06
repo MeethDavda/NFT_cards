@@ -2,6 +2,7 @@
 
 const key = import.meta.env.VITE_PINATA_API_KEY;
 const secret = import.meta.env.VITE_PINATA_API_SECRET;
+// const JWT = import.meta.env.VITE_PINATA_JWT_TOKEN;
 
 import axios from "axios";
 
@@ -38,7 +39,7 @@ export const uploadFileToIPFS = async (file) => {
   formData.append("file", file);
 
   const metaData = JSON.stringify({
-    name: "testname",
+    name: "testing",
     keyvalues: {
       exampleKey: "exampleValue",
     },
