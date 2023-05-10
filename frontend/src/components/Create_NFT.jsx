@@ -41,6 +41,7 @@ function Create_NFT({ marketplace, nft }) {
       const response = await uploadJSONToIPFS(nftJSON);
       if (response.success) {
         console.log("uploaded JSON to pinata: ", response);
+        return response.pinataURL;
       }
     } catch (error) {
       console.log("error uploading JSON to pinata", error);
@@ -52,7 +53,7 @@ function Create_NFT({ marketplace, nft }) {
 
     try {
       const metaDataURL = await uploadMetaDataToIPFS();
-
+      console.log(metaDataURL);
       await (await nft.mint(metaDataURL)).wait();
       const id = await nft.tokenCount;
 
@@ -65,6 +66,7 @@ function Create_NFT({ marketplace, nft }) {
       // window.location.replace("/");
     } catch (e) {
       alert("upload error", e);
+      console.log(e);
     }
   }
 

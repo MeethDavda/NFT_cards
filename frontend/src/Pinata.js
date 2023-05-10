@@ -2,7 +2,7 @@
 
 const key = import.meta.env.VITE_PINATA_API_KEY;
 const secret = import.meta.env.VITE_PINATA_API_SECRET;
-// const JWT = import.meta.env.VITE_PINATA_JWT_TOKEN;
+const JWT = `Bearer ${import.meta.env.VITE_PINATA_JWT_TOKEN}`;
 
 import axios from "axios";
 
@@ -14,13 +14,14 @@ export const uploadJSONToIPFS = async (JSONBody) => {
       headers: {
         pinata_api_key: key,
         pinata_secret_key: secret,
+        Authorization: JWT,
       },
     })
     .then(function (response) {
       return {
         success: true,
         pinataURL:
-          "https://gateway.pintata.cloud/ipfs/" + response.data.IpfsHash,
+          "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash,
       };
     })
     .catch(function (error) {
@@ -31,7 +32,6 @@ export const uploadJSONToIPFS = async (JSONBody) => {
       };
     });
 };
-
 export const uploadFileToIPFS = async (file) => {
   const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 
@@ -60,14 +60,16 @@ export const uploadFileToIPFS = async (file) => {
         "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
         pinata_api_key: key,
         pinata_secret_key: secret,
+        Authorization: JWT,
       },
     })
     .then(function (response) {
-      console.log("Image Uploaded", response.data.IpfsHash);
+      // console.log("Image Uploaded", response.data.IpfsHash);
+      console.log("Image Uploaded", response.data);
       return {
         success: true,
         pinataURL:
-          "https://gateway.pintata.cloud/ipfs/" + response.data.IpfsHash,
+          "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash,
       };
     })
     .catch(function (error) {

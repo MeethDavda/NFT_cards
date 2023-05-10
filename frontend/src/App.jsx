@@ -19,12 +19,14 @@ function App() {
   const [signer, setSigner] = useState("");
 
   const web3Handler = async () => {
-    console.log("pressed");
+    // console.log("pressed");
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
     setAccount(accounts[0]);
-    const provider = new ethers.providers.Web3Provider(window.etherium);
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum); //ethereum spelling was wrong lol
+
     const signer = provider.getSigner();
     setProvider(provider);
     setSigner(signer);
