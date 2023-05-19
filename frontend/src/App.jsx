@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, BrowserRouter, Route } from "react-router-dom";
 import "./App.css";
 import { ethers } from "ethers";
@@ -14,12 +14,16 @@ import MyNFT from "./components/MyNFT";
 function App() {
   const [account, setAccount] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
+
   const [nft, setNft] = useState(null);
   const [provider, setProvider] = useState("");
   const [signer, setSigner] = useState("");
 
+  // console.log(marketplace, "nft");
+
   const web3Handler = async () => {
     // console.log("pressed");
+
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
@@ -28,6 +32,7 @@ function App() {
     const provider = new ethers.providers.Web3Provider(window.ethereum); //ethereum spelling was wrong lol
 
     const signer = provider.getSigner();
+
     setProvider(provider);
     setSigner(signer);
     loadContracts(signer);
@@ -42,6 +47,7 @@ function App() {
     setMarketplace(marketplace);
 
     const nft = new ethers.Contract(NFTAddress.address, NFT.abi, signer);
+    // console.log(marketplace, "nft");
     setNft(nft);
   };
 

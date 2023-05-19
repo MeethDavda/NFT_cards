@@ -11,6 +11,8 @@ function Create_NFT({ marketplace, nft }) {
     price: "",
   });
 
+  // console.log(marketplace, "marketplace");
+
   async function uploadToIpfs(event) {
     event.preventDefault();
 
@@ -55,13 +57,17 @@ function Create_NFT({ marketplace, nft }) {
       const metaDataURL = await uploadMetaDataToIPFS();
       console.log(metaDataURL);
       await (await nft.mint(metaDataURL)).wait();
-      const id = await nft.tokenCount;
+      const id = await nft.tokenCount();
 
       await (await nft.setApprovalForAll(marketplace.address, true)).wait();
-      const listingPrice = ethers.utils.parseUnits(formParams.price, "ether");
+      const listingPrice = ethers.utils.parseEther(formParams.price.toString());
+
+      console.log(id, "id");
+      console.log(nft.address, listingPrice, "meta");
 
       await (await marketplace.makeItem(nft.address, id, listingPrice)).wait();
       alert("listed your NFT !!");
+
       setFormParams({ name: "", description: "", price: "" });
       // window.location.replace("/");
     } catch (e) {

@@ -5,7 +5,7 @@ function Navbar({ web3Handler, account }) {
   const navigate = useNavigate();
 
   return (
-    <div className="top-0 bg-slate-40 mx-auto max-w-[1400px] p-3 mt-4 rounded-lg w-full bg-blue-200">
+    <div className="top-0 bg-slate-40 mx-auto max-w-[1400px]  p-3 mt-4 rounded-lg w-full bg-blue-200">
       <div className="flex flex-row justify-between ">
         <div onClick={() => navigate("/")} className="cursor-pointer my-auto">
           Company NFT
