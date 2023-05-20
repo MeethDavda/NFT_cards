@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-function Card({ item, buyMarketItem }) {
+function Card({ item, buyMarketItem, myNft }) {
   return (
     <div className="flex flex-col bg-slate-100 p-4 rounded-xl drop-shadow-lg w-[55%]">
       <img
@@ -18,9 +18,16 @@ function Card({ item, buyMarketItem }) {
           <div className="font-medium">{item.description}</div>
         </div>
       </div>
-      <div className="bg-blue-500 p-3 mt-8 rounded-xl flex justify-center text-white font-medium cursor-pointer">
-        <button>Buy for {ethers.utils.formatEther(item.totalPrice)}ETH</button>
-      </div>
+      {myNft ? null : (
+        <div
+          className="bg-blue-500 p-3 mt-8 rounded-xl flex justify-center text-white font-medium cursor-pointer"
+          onClick={() => buyMarketItem(item)}
+        >
+          <button>
+            Buy for {ethers.utils.formatEther(item.totalPrice)}ETH
+          </button>
+        </div>
+      )}
     </div>
   );
 }

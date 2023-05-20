@@ -61,10 +61,21 @@ function App() {
             path="/"
           />
           <Route
-            element={<Create_NFT marketplace={marketplace} nft={nft} />}
+            element={
+              <Create_NFT
+                marketplace={marketplace}
+                nft={nft}
+                account={account}
+              />
+            }
             path="/create"
           />
-          <Route element={<MyNFT />} path="/mynft" />
+          <Route
+            element={
+              <MyNFT marketplace={marketplace} nft={nft} account={account} />
+            }
+            path="/mynft"
+          />
         </Routes>
       </BrowserRouter>
     </div>

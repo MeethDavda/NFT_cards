@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { useState } from "react";
 import { uploadFileToIPFS, uploadJSONToIPFS } from "../Pinata"; //Infura made their api paid - new alternative Pinata
 
-function Create_NFT({ marketplace, nft }) {
+function Create_NFT({ marketplace, nft, account }) {
   const [fileURL, setFileURL] = useState("");
   const [formParams, setFormParams] = useState({
     name: "",
@@ -52,39 +52,46 @@ function Create_NFT({ marketplace, nft }) {
 
   async function createNFT(e) {
     e.preventDefault();
+    if (!account) {
+      alert("Connect to Metamask!!");
+    } else {
+      try {
+        const metaDataURL = await uploadMetaDataToIPFS();
+        console.log(metaDataURL);
+        await (await nft.mint(metaDataURL)).wait();
+        const id = await nft.tokenCount();
 
-    try {
-      const metaDataURL = await uploadMetaDataToIPFS();
-      console.log(metaDataURL);
-      await (await nft.mint(metaDataURL)).wait();
-      const id = await nft.tokenCount();
+        await (await nft.setApprovalForAll(marketplace.address, true)).wait();
+        const listingPrice = ethers.utils.parseEther(
+          formParams.price.toString()
+        );
 
-      await (await nft.setApprovalForAll(marketplace.address, true)).wait();
-      const listingPrice = ethers.utils.parseEther(formParams.price.toString());
+        console.log(id, "id");
+        console.log(nft.address, listingPrice, "meta");
 
-      console.log(id, "id");
-      console.log(nft.address, listingPrice, "meta");
+        await (
+          await marketplace.makeItem(nft.address, id, listingPrice)
+        ).wait();
+        alert("listed your NFT !!");
 
-      await (await marketplace.makeItem(nft.address, id, listingPrice)).wait();
-      alert("listed your NFT !!");
-
-      setFormParams({ name: "", description: "", price: "" });
-      // window.location.replace("/");
-    } catch (e) {
-      alert("upload error", e);
-      console.log(e);
+        setFormParams({ name: "", description: "", price: "" });
+        // window.location.replace("/");
+      } catch (e) {
+        alert("upload error", e);
+        console.log(e);
+      }
     }
   }
 
   return (
     <div className="flex justify-center content-center max-w-[1200px] mx-auto ">
-      <div className="border-2 border-gray-400 bg-slate-100 rounded-md p-4 mt-10 w-[60%] items-center flex flex-col justify-center">
+      <div className="border- border-gray-40 drop-shadow-lg  bg-slate-100 rounded-lg p-4 mt-10 w-[60%] items-center flex flex-col justify-center">
         <div className="flex flex-col mt-5 ">
           <div>Enter the Name of the NFT</div>
           <input
             type="text"
             required
-            className="mt-2 border-2 border-gray-400 p-2"
+            className="mt-2 rounded-lg drop-shadow-sm p-2"
             onChange={(e) =>
               setFormParams({ ...formParams, name: e.target.value })
             }
@@ -97,7 +104,7 @@ function Create_NFT({ marketplace, nft }) {
             id=""
             cols="30"
             rows="5"
-            className="mt-2 border-2 border-gray-400"
+            className="mt-2 rounded-lg drop-shadow-sm"
             onChange={(e) =>
               setFormParams({ ...formParams, description: e.target.value })
             }
@@ -108,7 +115,7 @@ function Create_NFT({ marketplace, nft }) {
           <input
             type="number"
             required
-            className="mt-2 border-2 border-gray-400 text-sm p-2"
+            className="mt-2 rounded-lg drop-shadow-sm text-sm p-2"
             onChange={(e) =>
               setFormParams({ ...formParams, price: e.target.value })
             }
@@ -117,14 +124,14 @@ function Create_NFT({ marketplace, nft }) {
           />
         </div>
 
-        <div className="flex flex-col mt-4 gap-2 ml-14">
+        <div className="flex flex-col mt-4 gap-2 ml-16">
           <div>Upload Image</div>
           <input type="file" required name="file" onChange={uploadToIpfs} />
         </div>
 
         <div className="mt-8">
           <button
-            className=" p-3 rounded-full border-2 border-slate-600"
+            className=" p-3 rounded-full mb-5 bg-blue-600 text-white drop-shadow-lg"
             onClick={createNFT}
           >
             Create and List NFT
