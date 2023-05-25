@@ -20,7 +20,10 @@ async function main() {
   // Marketplace address (meeth): 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9
   // NFT Contract address(meeth): 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
 
-  saveFrontendFiles(contract, "NFT");
+  // Marketplace Contract address (Meeth mumbai): 0x4A14Df41775b918FD7ECd46278db86FD88Fa97A2
+  // NFT Contract address (Meeth mumbai): 0x679A3d5A211486fDB5FB4a6B60C40216cA8b5B95
+
+  saveFrontendFiles(nft, "NFT");
   saveFrontendFiles(marketplace, "Marketplace");
 }
 
