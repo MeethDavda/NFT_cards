@@ -1,24 +1,84 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Routes, BrowserRouter, Route } from "react-router-dom";
 import "./App.css";
+import { ethers } from "ethers";
+import MarketplaceAddress from "../contractsData/Marketplace-address.json";
+import MarketplaceAbi from "../contractsData/Marketplace.json";
+import NFTAddress from "../contractsData/NFT-address.json";
+import NFT from "../contractsData/NFT.json";
+import Navbar from "./components/Navbar";
+import Home from "./components/Home";
+import Create_NFT from "./components/Create_NFT";
+import MyNFT from "./components/MyNFT";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [account, setAccount] = useState(null);
+  const [marketplace, setMarketplace] = useState(null);
+
+  const [nft, setNft] = useState(null);
+  const [provider, setProvider] = useState("");
+  const [signer, setSigner] = useState("");
+
+  // console.log(marketplace, "nft");
+
+  const web3Handler = async () => {
+    // console.log("pressed");
+
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    setAccount(accounts[0]);
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum); //ethereum spelling was wrong lol
+
+    const signer = provider.getSigner();
+
+    setProvider(provider);
+    setSigner(signer);
+    loadContracts(signer);
+  };
+
+  const loadContracts = async (signer) => {
+    const marketplace = new ethers.Contract(
+      MarketplaceAddress.address,
+      MarketplaceAbi.abi,
+      signer
+    );
+    setMarketplace(marketplace);
+
+    const nft = new ethers.Contract(NFTAddress.address, NFT.abi, signer);
+    // console.log(marketplace, "nft");
+    setNft(nft);
+  };
 
   return (
-    <>
-      <h1>Vite + React+blockchain</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p className="">
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="m-0">
+      <BrowserRouter>
+        <Navbar web3Handler={web3Handler} account={account} />
+        <Routes>
+          <Route
+            element={<Home marketplace={marketplace} nft={nft} />}
+            path="/"
+          />
+          <Route
+            element={
+              <Create_NFT
+                marketplace={marketplace}
+                nft={nft}
+                account={account}
+              />
+            }
+            path="/create"
+          />
+          <Route
+            element={
+              <MyNFT marketplace={marketplace} nft={nft} account={account} />
+            }
+            path="/mynft"
+          />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 
