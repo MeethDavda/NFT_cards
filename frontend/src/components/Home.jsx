@@ -66,7 +66,7 @@ function Home({ marketplace, nft }) {
               })}
             </div>
           ) : (
-            <div>No Assets available</div>
+            <div className="mt-10">No NFTs Listed</div>
           )}
         </div>
       )}
