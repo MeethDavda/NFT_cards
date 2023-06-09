@@ -47,18 +47,21 @@ function MyNFT({ marketplace, nft, account }) {
   return (
     <div>
       {loading ? (
-        <div className="flex justify-center mt-10 text-2xl ">
-          <p className="bg-red-300 p-4 rounded-xl ">Loading ...</p>
+        <div className="flex justify-center mt-10 text-2xl mx-auto">
+          <p className="bg-red-300 p-4 rounded-xl ">
+            Loading ...
+            <p className="text-sm">It may take a few seconds</p>
+          </p>
         </div>
       ) : (
-        <div className="flex justify-center">
+        <div className="flex justify-center flex-wrap w-[90%] mx-auto">
           {purchases.length > 0 ? (
-            <div className="flex flex-row mt-10">
+            <div className="flex flex-row mt-10 flex-wrap justify-around ">
               {purchases.map((item, idx) => {
                 return (
                   <div
                     key={idx}
-                    className="text-black flex flex-row flex-wrap justify-around w-[30em]"
+                    className="text-black flex flex-row flex-wrap justify-around w-[30em] mb-10"
                   >
                     <Card myNft={true} item={item} />
                   </div>

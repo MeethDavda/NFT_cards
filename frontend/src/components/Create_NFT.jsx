@@ -8,7 +8,7 @@ function Create_NFT({ marketplace, nft, account }) {
   const [formParams, setFormParams] = useState({
     name: "",
     description: "",
-    price: "",
+    price: "0.01",
   });
 
   // console.log(marketplace, "marketplace");
@@ -111,17 +111,20 @@ function Create_NFT({ marketplace, nft, account }) {
             value={formParams.description}
           ></textarea>
 
-          <div className="mt-8">Enter the Price of the NFT</div>
-          <input
+          <div className="mt-8">Price of the NFT</div>
+          {/* <input
             type="number"
             required
             className="mt-2 rounded-lg drop-shadow-sm text-sm p-2"
-            onChange={(e) =>
-              setFormParams({ ...formParams, price: e.target.value })
-            }
+            // onChange={(e) =>
+            //   setFormParams({ ...formParams, price: e.target.value })
+            // }
             value={formParams.price}
             placeholder="price in Matic"
-          />
+          /> */}
+          <p className="mt-2 rounded-lg drop-shadow-sm text-md p-1">
+            0.01 MATIC
+          </p>
         </div>
 
         <div className="flex flex-col mt-4 gap-2 ml-16">

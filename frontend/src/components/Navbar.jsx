@@ -14,6 +14,14 @@ function Navbar({ web3Handler, account }) {
           Company NFT
         </div>
         <div className="flex flex-row mx-2">
+          <a
+            href="https://64832590fc24c4080450ee64--steady-buttercream-5a269c.netlify.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cursor-pointer my-auto mx-5"
+          >
+            Company Dropbox
+          </a>
           <div
             onClick={() => navigate("/create")}
             className="cursor-pointer my-auto mx-5"
