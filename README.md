@@ -12,12 +12,7 @@
 ```
  npm run dev
 ```
-
-## Some hardhat commands :
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
+In the root directory create a .env file and your Pinata IPFS Credentials
+```
+VITE_PINATA_JWT_TOKEN=
 ```
